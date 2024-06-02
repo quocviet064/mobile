@@ -77,7 +77,9 @@ export default function LoginScreen() {
           </TouchableOpacity>
           <TouchableOpacity style={styles.loginButton}>
             <Link href={"/home"}>
-              <Text style={styles.loginButtonText}>Login</Text>
+              <Text style={[styles.loginButtonText, { textAlign: "center" }]}>
+                Login
+              </Text>
             </Link>
           </TouchableOpacity>
           <View style={styles.orContainer}>
@@ -88,7 +90,7 @@ export default function LoginScreen() {
           <TouchableOpacity style={styles.googleButton}>
             <Image
               style={styles.googleLogo}
-              // source={require("./assets/images/google-logo.png")}
+              source={require("../assets/images/google-logo.png")}
             />
             <Text style={styles.googleButtonText}>Login with Google</Text>
           </TouchableOpacity>
@@ -154,6 +156,8 @@ const styles = StyleSheet.create({
     padding: 14,
     borderRadius: 10,
     marginTop: 20,
+    justifyContent: 'center', 
+    alignItems: 'center'
   },
   loginButtonText: {
     color: "#fff",
