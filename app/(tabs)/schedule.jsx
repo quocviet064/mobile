@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, FlatList } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import moment from 'moment';
+import Background from "@/src/Background";
 
 export default function Schedule() {
   const [selectedDate, setSelectedDate] = useState(null);
@@ -71,6 +72,7 @@ export default function Schedule() {
   }, {});
 
   return (
+    <Background>
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={() => setCurrentWeek(prev => prev.clone().subtract(1, 'week'))}>
@@ -134,13 +136,13 @@ export default function Schedule() {
         </ScrollView>
       )}
     </View>
+    </Background>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f0f0f0",
     padding: 20,
   },
   headerContainer: {
