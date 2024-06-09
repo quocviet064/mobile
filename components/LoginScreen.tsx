@@ -1,49 +1,62 @@
-import { StatusBar } from "expo-status-bar";
 import {
-  Image,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
   View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
 } from "react-native";
 
-import { Feather } from "@expo/vector-icons";
 import React from "react";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
+import { authApi } from "@/api/auth.api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Background from "@/src/Background";
+import { darkGreen } from "@/src/Constants";
+import { Feather } from "@expo/vector-icons";
 
 export default function LoginScreen() {
-  const [email, setEmail] = React.useState<string>("");
+  const [employeeID, setEmployeeID] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
+  const [passwordIsVisible, setPasswordIsVisible] = React.useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = React.useState<string>("");
 
-  const [passwordIsVisible, setPasswordIsVisible] =
-    React.useState<boolean>(false);
+  const onSubmit = async () => {
+    if (!!employeeID && !!password) {
+      try {
+        const res = await authApi.login(employeeID, password);
+        if (res.message === "Login Successfully !") {
+          AsyncStorage.setItem("authToken", res.data.accessToken);
+          router.push("/schedule");
+        } else {
+          setErrorMessage("Invalid employee ID or password.");
+        }
+      } catch (err) {
+        console.log("err", err);
+        setErrorMessage("Invalid employee ID or password.");
+      }
+    } else {
+      setErrorMessage("Please fill in both fields.");
+    }
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar style="auto" />
-      <ScrollView
-        contentContainerStyle={{
-          flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <View style={styles.content}>
-          <Text style={styles.title}>Login</Text>
+    <Background>
+      <View style={styles.outerContainer}>
+        <Text style={styles.loginText}>Login</Text>
+        <View style={styles.innerContainer}>
+          <Text style={styles.welcomeText}>Welcome Back</Text>
+          <Text style={styles.loginPromptText}>Login to your account</Text>
           <View style={styles.inputContainer}>
             <View style={styles.icon}>
-              <Feather name="mail" size={22} color="#7C808D" />
+              <Feather name="user" size={22} color="#7C808D" />
             </View>
             <TextInput
               style={styles.input}
-              placeholder="Email ID"
+              placeholder="employeeID"
               placeholderTextColor="#7C808D"
               selectionColor="#3662AA"
-              onChangeText={setEmail}
-              value={email}
+              onChangeText={setEmployeeID}
+              value={employeeID}
             />
           </View>
           <View style={styles.inputContainer}>
@@ -70,56 +83,83 @@ export default function LoginScreen() {
               />
             </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.forgotPasswordButton}>
-            <Text style={styles.forgotPasswordButtonText}>
-              Forgot password?
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.loginButton}>
-            <Link href={"/home"}>
-              <Text style={[styles.loginButtonText, { textAlign: "center" }]}>
-                Login
-              </Text>
+          {errorMessage ? (
+            <Text style={styles.errorText}>{errorMessage}</Text>
+          ) : null}
+          <TouchableOpacity style={styles.forgotPasswordContainer}>
+            <Link href={"/forgot"}>
+              <Text style={styles.forgotPasswordText}>Forgot password?</Text>
             </Link>
           </TouchableOpacity>
-          <View style={styles.orContainer}>
-            <View style={styles.orLine} />
-            <Text style={styles.orText}>OR</Text>
-            <View style={styles.orLine} />
-          </View>
-          <TouchableOpacity style={styles.googleButton}>
-            <Image
-              style={styles.googleLogo}
-              source={require("../assets/images/google-logo.png")}
-            />
-            <Text style={styles.googleButtonText}>Login with Google</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.registerButton}>
-            <Text style={styles.registerButtonText}>
-              Not have an account yet?{" "}
-              <Text style={styles.registerButtonTextHighlight}>
-                Register now!
-              </Text>
+          <TouchableOpacity
+            onPress={onSubmit}
+            style={styles.loginButton}
+          >
+            <Text style={[styles.loginButtonText, { textAlign: "center" }]}>
+              Login
             </Text>
           </TouchableOpacity>
         </View>
-      </ScrollView>
-    </SafeAreaView>
+      </View>
+    </Background>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
+  outerContainer: {
+    alignItems: "center",
+    width: "100%", 
+    height: "100%", 
   },
-  content: {
-    paddingHorizontal: 30,
-  },
-  title: {
-    fontSize: 30,
+  loginText: {
+    color: "white",
+    fontSize: 64,
     fontWeight: "bold",
-    marginBottom: 40,
+    marginVertical: 100,
+  },
+  innerContainer: {
+    backgroundColor: "white",
+    height: 700,
+    width: "100%", 
+    borderTopLeftRadius: 130,
+    paddingTop: 100,
+    alignItems: "center",
+    position: "absolute",
+    bottom: 0,
+  },
+  welcomeText: {
+    fontSize: 40,
+    color: darkGreen,
+    fontWeight: "bold",
+  },
+  loginPromptText: {
+    color: "grey",
+    fontSize: 19,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  forgotPasswordContainer: {
+    alignItems: "flex-end",
+    width: "78%",
+    paddingRight: 16,
+    marginBottom: 200,
+  },
+  forgotPasswordText: {
+    color: darkGreen,
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  icon: {
+    marginRight: 15,
+  },
+  input: {
+    borderRadius: 100,
+    color: darkGreen,
+    paddingHorizontal: 10,
+    width: "70%",
+    height: 40,
+    backgroundColor: "rgb(220,220,220)",
+    marginVertical: 10,
   },
   inputContainer: {
     flexDirection: "row",
@@ -129,91 +169,27 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     position: "relative",
   },
-  icon: {
-    marginRight: 15,
-  },
-  input: {
-    borderBottomWidth: 1.5,
-    flex: 1,
-    paddingBottom: 10,
-    borderBottomColor: "#eee",
-    fontSize: 16,
-  },
   passwordVisibleButton: {
     position: "absolute",
-    right: 0,
+    right: 20,
   },
-  forgotPasswordButton: {
-    alignSelf: "flex-end",
-  },
-  forgotPasswordButtonText: {
-    color: "#3662AA",
+  errorText: {
+    color: "red",
     fontSize: 16,
-    fontWeight: "500",
-  },
-  loginButton: {
-    backgroundColor: "#3662AA",
-    padding: 14,
-    borderRadius: 10,
-    marginTop: 20,
-    justifyContent: 'center', 
-    alignItems: 'center'
-  },
-  loginButtonText: {
-    color: "#fff",
-    textAlign: "center",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  orContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 20,
     marginBottom: 20,
   },
-  orLine: {
-    height: 1,
-    backgroundColor: "#eee",
-    flex: 1,
+  loginButtonText: {
+    fontSize: 23,
+    fontWeight: "bold",
+    color: "#fff",
   },
-  orText: {
-    color: "#7C808D",
-    marginRight: 10,
-    marginLeft: 10,
-    fontSize: 14,
-  },
-  googleButton: {
-    backgroundColor: "#F2F6F2",
-    padding: 14,
-    borderRadius: 10,
-    flexDirection: "row",
+  loginButton: {
+    backgroundColor: "#006A42",
+    borderRadius: 100,
     alignItems: "center",
     justifyContent: "center",
-    position: "relative",
-  },
-  googleButtonText: {
-    color: "#4E5867",
-    fontSize: 16,
-    fontWeight: "500",
-    textAlign: "center",
-  },
-  googleLogo: {
-    width: 20.03,
-    height: 20.44,
-    position: "absolute",
-    left: 14,
-  },
-  registerButton: {
-    alignSelf: "center",
-    marginTop: 40,
-  },
-  registerButtonText: {
-    fontSize: 16,
-    color: "#7C808D",
-  },
-  registerButtonTextHighlight: {
-    fontSize: 16,
-    color: "#3662AA",
-    fontWeight: "500",
+    paddingVertical: 10,
+    paddingHorizontal: 40,
+    bottom: 110,
   },
 });

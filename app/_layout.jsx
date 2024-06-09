@@ -10,8 +10,8 @@ export default function RootLayout() {
       <Stack.Screen 
         name="(tabs)" 
         options={{ 
-          headerTitle: "",  // Để tiêu đề trống để không hiển thị (tabs)
-          headerBackTitleVisible: false // Ẩn tiêu đề nút "Back"
+          headerTitle: "",  
+          headerBackTitleVisible: false 
         }} 
       />
     </Stack>
