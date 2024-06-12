@@ -13,18 +13,37 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Background from "@/src/Background";
 import { darkGreen } from "@/src/Constants";
 import { Feather } from "@expo/vector-icons";
+import { employeeStore } from "@/store/employee";
 
 export default function LoginScreen() {
   const [employeeID, setEmployeeID] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
-  const [passwordIsVisible, setPasswordIsVisible] = React.useState<boolean>(false);
+  const [passwordIsVisible, setPasswordIsVisible] =
+    React.useState<boolean>(false);
   const [errorMessage, setErrorMessage] = React.useState<string>("");
+
+  //get update function in store
+  const updateUserProfile = employeeStore((state) => state.updateProfile);
 
   const onSubmit = async () => {
     if (!!employeeID && !!password) {
       try {
         const res = await authApi.login(employeeID, password);
         if (res.message === "Login Successfully !") {
+          updateUserProfile({
+            id: res.data.employeeDto.id,
+            employeeID: res.data.employeeDto.employeeID,
+            fullName: res.data.employeeDto.fullName,
+            avatarUrl: res.data.employeeDto.avatarUrl,
+            email: res.data.employeeDto.email,
+            phoneNumber: res.data.employeeDto.phoneNumber,
+            address: res.data.employeeDto.address,
+            dateOfBirth: res.data.employeeDto.dateOfBirth,
+            roleName: res.data.employeeDtoroleName,
+            restaurantID: res.data.employeeDto.restaurantID,
+            isActive: res.data.employeeDto.isActive,
+            dateJoined: res.data.employeeDto.dateJoined,
+          });
           AsyncStorage.setItem("authToken", res.data.accessToken);
           router.push("/schedule");
         } else {
@@ -86,15 +105,12 @@ export default function LoginScreen() {
           {errorMessage ? (
             <Text style={styles.errorText}>{errorMessage}</Text>
           ) : null}
-          <TouchableOpacity style={styles.forgotPasswordContainer}>
+          {/* <TouchableOpacity style={styles.forgotPasswordContainer}>
             <Link href={"/forgot"}>
               <Text style={styles.forgotPasswordText}>Forgot password?</Text>
             </Link>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={onSubmit}
-            style={styles.loginButton}
-          >
+          </TouchableOpacity> */}
+          <TouchableOpacity onPress={onSubmit} style={styles.loginButton}>
             <Text style={[styles.loginButtonText, { textAlign: "center" }]}>
               Login
             </Text>
@@ -108,8 +124,8 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   outerContainer: {
     alignItems: "center",
-    width: "100%", 
-    height: "100%", 
+    width: "100%",
+    height: "100%",
   },
   loginText: {
     color: "white",
@@ -120,7 +136,7 @@ const styles = StyleSheet.create({
   innerContainer: {
     backgroundColor: "white",
     height: 700,
-    width: "100%", 
+    width: "100%",
     borderTopLeftRadius: 130,
     paddingTop: 100,
     alignItems: "center",
@@ -190,6 +206,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 10,
     paddingHorizontal: 40,
-    bottom: 110,
+    bottom: 0,
   },
 });

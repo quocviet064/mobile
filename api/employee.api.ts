@@ -8,6 +8,21 @@ export type PostEmployeeApplyREQ = {
   address: string;
 };
 
+export type EmployeeProfile = {
+  id: string;
+  employeeID: number;
+  fullName: string;
+  avatarUrl: string;
+  email: string;
+  phoneNumber: string;
+  address: string;
+  dateOfBirth: string;
+  roleName: string;
+  restaurantID: number;
+  isActive: boolean;
+  dateJoined: string;
+};
+
 export const employeeApi = {
   postEmployeeApply: async ({
     fullName,
@@ -24,6 +39,14 @@ export const employeeApi = {
         phoneNumber,
         address,
       })
+      .then((res) => res.data)
+      .catch((err) => err);
+    return response;
+  },
+
+  getEmployeeProfile: async ({}: EmployeeProfile) => {
+    const response = http
+      .get("/employee/{employee_id}")
       .then((res) => res.data)
       .catch((err) => err);
     return response;

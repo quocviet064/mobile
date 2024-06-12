@@ -1,69 +1,168 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   View,
   Text,
   StyleSheet,
-  TextInput,
+  Image,
   TouchableOpacity,
+  Alert,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  useNavigation,
+  NavigationProp,
+  StackActions,
+} from "@react-navigation/native";
 import Background from "@/src/Background";
+import { employeeStore } from "@/store/employee";
+import avatarImage from "@/assets/images/pngegg.png";
+import { Feather } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 
-const Profile = () => {
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+type RootStackParamList = {
+  Profile: undefined;
+  login: undefined;
+};
 
-  const handlePasswordChange = () => {
-    // Xử lý thay đổi mật khẩu
-  };
+export default function Profile() {
+  const userProfile = employeeStore((state) => state.userProfile);
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
-  const handleLogout = () => {
-    // Xử lý đăng xuất
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.clear();
+      navigation.dispatch(StackActions.replace("login"));
+    } catch (error) {
+      Alert.alert(
+        "Error",
+        "An error occurred while logging out. Please try again."
+      );
+    }
   };
 
   return (
     <Background>
-      <View style={styles.container}>
-        <Text style={styles.header}>Profile</Text>
+      <View style={styles.innerContainer}>
+        <View style={styles.container}>
+          {userProfile ? (
+            <>
+              <View style={styles.avatarFrame}>
+                <Image source={avatarImage} style={styles.avatar} />
+              </View>
+              <View style={styles.card}>
+                <View style={styles.icon}>
+                  <Feather name="user" size={22} color="black" />
+                </View>
+                <Text style={styles.text}>{userProfile.fullName}</Text>
+              </View>
+              <View style={styles.card}>
+                <View style={styles.icon}>
+                  <Feather name="mail" size={22} color="black" />
+                </View>
+                <Text style={styles.text}> {userProfile.email}</Text>
+              </View>
+              <View style={styles.card}>
+                <View style={styles.icon}>
+                  <FontAwesome name="birthday-cake" size={22} color="black" />
+                </View>
+                <Text style={styles.text}>{userProfile.dateOfBirth}</Text>
+              </View>
+              <View style={styles.card}>
+                <View style={styles.icon}>
+                  <FontAwesome name="phone" size={22} color="black" />
+                </View>
+                <Text style={styles.text}>{userProfile.phoneNumber}</Text>
+              </View>
+              <View style={styles.card}>
+                <View style={styles.icon}>
+                  <FontAwesome name="address-card" size={22} color="black" />
+                </View>
+                <Text style={styles.text}>{userProfile.address}</Text>
+              </View>
+              <TouchableOpacity style={styles.button} onPress={handleLogout}>
+                <Text style={styles.buttonText}>Logout</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <Text style={styles.errorText}>User profile not found</Text>
+          )}
+        </View>
       </View>
     </Background>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  container: {
+  innerContainer: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 40,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
+  container: {
+    backgroundColor: "#ffffff",
+    borderRadius: 20,
+    width: "93%",
+    height: "96%",
+    padding: 20,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
   },
-  label: {
-    fontSize: 16,
-    marginBottom: 5,
+  avatarFrame: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    borderWidth: 3,
+    borderColor: "#e0e0e0",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 60,
+    marginTop: 50,
+    overflow: "hidden",
   },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
+  avatar: {
+    width: "100%",
+    height: "100%",
+  },
+  card: {
+    backgroundColor: "rgba(0, 0, 0, 0.05)",
+    borderRadius: 10,
+    padding: 15,
+    marginVertical: 5,
+    width: "100%",
+    alignItems: "center",
+    flexDirection: "row",
+  },
+  text: {
+    fontSize: 18,
+    color: "#333",
+    fontWeight: "500",
   },
   button: {
-    backgroundColor: "blue",
-    padding: 15,
-    borderRadius: 5,
+    backgroundColor: "#006A42",
+    borderRadius: 25,
     alignItems: "center",
-    marginTop: 20,
+    justifyContent: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 40,
+    marginTop: 50,
   },
   buttonText: {
-    color: "white",
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
+    color: "#fff",
+  },
+  errorText: {
+    fontSize: 18,
+    color: "red",
+  },
+  icon: {
+    marginEnd: 20,
   },
 });
-
-export default Profile;
