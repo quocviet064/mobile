@@ -23,6 +23,31 @@ export type EmployeeProfile = {
   dateJoined: string;
 };
 
+export type EmployeeShift = {
+  title: string;
+  start: string;
+  end: string;
+  allDay: string | number | null;
+  resource: {
+    id: string;
+    restaurantID: string;
+    shift: string | number | null;
+    dateOfWork: string;
+    month: string;
+    year: string;
+    checkIn: string;
+    checkOut: string;
+    actual_CheckIn: string;
+    actual_CheckOut: string | number | null;
+    totalHours: string | number | null;
+    isOnTime: string | number | null;
+    status: string;
+    employeeNote: string;
+    note: string | number | null;
+    employee: EmployeeProfile;
+  };
+};
+
 export const employeeApi = {
   postEmployeeApply: async ({
     fullName,
@@ -50,5 +75,17 @@ export const employeeApi = {
       .then((res) => res.data)
       .catch((err) => err);
     return response;
+  },
+
+  getEmployeeShift: async (date: string) => {
+    try {
+      const response = await http.get(
+        `employeeshift/week?date=${date}&IsMonth=false`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching employee shifts:", error);
+      throw error;
+    }
   },
 };

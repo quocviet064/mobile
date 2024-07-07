@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "24501098130",
+    "project_id": "mobileswd-22f4c",
+    "storage_bucket": "mobileswd-22f4c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:24501098130:android:f2b6824877622c3b11f84b",
+        "android_client_info": {
+          "package_name": "com.quocviet999.project_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBT37F-S5I9YWWksE0nyQeu46ULaRilPEw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

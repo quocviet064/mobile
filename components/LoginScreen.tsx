@@ -14,6 +14,7 @@ import Background from "@/src/Background";
 import { darkGreen } from "@/src/Constants";
 import { Feather } from "@expo/vector-icons";
 import { employeeStore } from "@/store/employee";
+import messaging from "@react-native-firebase/messaging";
 
 export default function LoginScreen() {
   const [employeeID, setEmployeeID] = React.useState<string>("");
@@ -24,7 +25,6 @@ export default function LoginScreen() {
 
   //get update function in store
   const updateUserProfile = employeeStore((state) => state.updateProfile);
-
   const onSubmit = async () => {
     if (!!employeeID && !!password) {
       try {
@@ -45,7 +45,11 @@ export default function LoginScreen() {
             dateJoined: res.data.employeeDto.dateJoined,
           });
           AsyncStorage.setItem("authToken", res.data.accessToken);
-          router.push("/schedule");
+          const deviceToken = await messaging().getToken();
+          const resAddToken = await authApi.addToken(employeeID, deviceToken);
+          if (resAddToken.message === "Add device token successfully!") {
+            router.push("/schedule");
+          }
         } else {
           setErrorMessage("Invalid employee ID or password.");
         }
@@ -105,11 +109,11 @@ export default function LoginScreen() {
           {errorMessage ? (
             <Text style={styles.errorText}>{errorMessage}</Text>
           ) : null}
-          {/* <TouchableOpacity style={styles.forgotPasswordContainer}>
+          <TouchableOpacity style={styles.forgotPasswordContainer}>
             <Link href={"/forgot"}>
               <Text style={styles.forgotPasswordText}>Forgot password?</Text>
             </Link>
-          </TouchableOpacity> */}
+          </TouchableOpacity>
           <TouchableOpacity onPress={onSubmit} style={styles.loginButton}>
             <Text style={[styles.loginButtonText, { textAlign: "center" }]}>
               Login
@@ -131,7 +135,7 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 64,
     fontWeight: "bold",
-    marginVertical: 100,
+    marginVertical: 80,
   },
   innerContainer: {
     backgroundColor: "white",

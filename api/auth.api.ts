@@ -1,5 +1,5 @@
 import { http } from "@/utils/http";
-import { EmployeeProfile } from "./employee.api";
+import { EmployeeProfile} from "./employee.api";
 
 export type EmployeeLoginDTO = {
   accessToken: string;
@@ -17,6 +17,16 @@ export const authApi = {
       .then((res) => res.data)
       .catch((err) => console.log("error", err));
 
+    return response;
+  },
+  addToken: async (employeeID: string, deviceToken: string) => {
+    const response = http
+      .post("/employee/add-token", {
+        employeeID,
+        deviceToken,
+      })
+      .then((res) => res.data)
+      .catch((err) => console.log("error", err));
     return response;
   },
 };

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -15,7 +15,6 @@ import {
 } from "@react-navigation/native";
 import Background from "@/src/Background";
 import { employeeStore } from "@/store/employee";
-import avatarImage from "@/assets/images/pngegg.png";
 import { Feather } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 
@@ -47,7 +46,10 @@ export default function Profile() {
           {userProfile ? (
             <>
               <View style={styles.avatarFrame}>
-                <Image source={avatarImage} style={styles.avatar} />
+                <Image
+                  source={{ uri: "@/assets/images/pngegg.png" }}
+                  style={styles.avatar}
+                />
               </View>
               <View style={styles.card}>
                 <View style={styles.icon}>
